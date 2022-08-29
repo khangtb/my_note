@@ -1,0 +1,9 @@
+#to get all function
+grep -E "[^;]$" ivi-controller.c | sed  '/^\s/d' | grep "(" | cut -d '(' -f 1 | sed -r 's/static int //g'
+grep -rin -E "[^;]$" ivi-controller.c | sed -r '/^[0-9]{1,4}:\s/d' | grep "="
+grep -rin -E "[^;]$" ivi-controller.c | sed -r '/^[0-9]{1,4}:\s/d' | grep "("
+
+#find the func caller
+awk -F ':' '{print $2}' func.txt | while read line; do { echo "Find $line: "; grep -rinE ".$line" ivi-controller.c | cut -d ":" -f 1 | while read line1; do { awk -F ':' -v data_line=$line1 -v bk="" '{if(data_line > $1) bk=$2; else {print "found: " bk; exit; };}' func.txt;} done; } done
+
+awk -F ':' -v var1="122" -v bk="" '{if(var1 > $1) bk=$2; else {print $1 " " bk " " $2; exit} }' ~/workspace/tmp/allfunc.txt
